@@ -9,7 +9,7 @@ import { Button, Select } from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 Vue.component(Button.name, Button);
 Vue.component(Select.name, Select);
-
+import 'normalize.css'
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
