@@ -1,6 +1,6 @@
 <template>
     <div class="indexContainer"> 
-     <el-col :span="3">
+     <el-col :span="4">
         <el-menu :default-active="activeName" @select="handleSelect" class="el-menu-vertical-demo">
             <el-submenu index="1">
                 <template slot="title">
@@ -39,7 +39,10 @@
             </el-submenu>
         </el-menu>
     </el-col>
+    <el-col :span="20" class="users">
         <router-view></router-view>
+    </el-col>
+
     </div>
 </template>
 <script>
@@ -71,4 +74,7 @@
         min-width: 10px;
     }
 }
+    .users{
+        padding: 50px;
+    }
 </style>
