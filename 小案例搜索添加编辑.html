@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+<title>Document</title>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<style>
+    .toolbar {
+        height: 28px;
+        line-height: 28px;
+        border: 1px solid #eee;
+        border-bottom: 0;
+        padding: 12px 10px;
+        display: flex;
+    }
+
+    .toolbar input {
+        margin-left: 50px;
+        width: 200px;
+        height: 28px;
+        vertical-align: middle;
+        float: left;
+    }
+
+    .el-input {
+        width: 200px;
+    }
+
+    i {
+        width: 20px;
+        height: 20px;
+        line-height: 20px;
+        padding: 2px;
+        text-align: center;
+    }
+
+    .el-icon-search {
+        z-index: 999;
+        margin-left: 23px;
+        margin-top: 3px;
+    }
+</style>
+</head>
+<body>
+        <div id="app">
+            <!-- 添加 搜索块 -->
+                <div class="toolbar">
+                    <el-button type="success" @click="isHidden" size="mini">添加</el-button>
+                    <el-input v-model="searchId" placeholder="请输入要查找的id"></el-input>
+                    <i class="el-icon-search" @click="queryUserInfoItem(id)"></i>
+                </div>
+
+                <el-dialog title="基本信息" :visible.sync="dialogFormVisible" v-show="dialogFormVisible" center @close="closeDialog">
+                        <el-form >
+                            <el-form-item label="编号" :label-width="formLabelWidth">
+                                <el-input v-model="id" autocomplete="off"></el-input>
+                            </el-form-item>
+                            <el-form-item label="姓名" :label-width="formLabelWidth">
+                                <el-input v-model="name" autocomplete="off"></el-input>
+                            </el-form-item>
+                            <el-form-item label="年龄" :label-width="formLabelWidth">
+                                <el-input v-model="age" autocomplete="off"></el-input>
+                            </el-form-item>
+                            <el-form-item label="性别" :label-width="formLabelWidth">
+                                <el-select v-model="gender" placeholder="请选择性别">
+                                    <el-option label="男" value="男"></el-option>
+                                    <el-option label="女" value="女"></el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-form>
+                        <div slot="footer" class="dialog-footer">
+                            <el-button @click="dialogFormVisible = false">取 消</el-button>
+                            <el-button type="primary" @click="getUserInfoItem">确 定</el-button>
+                        </div>
+                    </el-dialog>
+
+
+                <!-- 用户列表 -->
+                <el-table :data="newList" border style="width: 100%" stripe>
+                    <!-- <el-row> -->
+                    <!-- <el-col :span="5"> -->
+                    <el-table-column prop="id" label="编号" width="180">
+                    </el-table-column>
+                    <!-- </el-col> -->
+                    <!-- <el-col :span="5"> -->
+                    <el-table-column prop="name" label="姓名" width="180">
+                    </el-table-column>
+                    <!-- </el-col> -->
+                    <!-- <el-col :span="5"> -->
+                    <el-table-column prop="age" label="年龄" width="180">
+                    </el-table-column>
+                    <!-- </el-col> -->
+                    <!-- <el-col :span="5"> -->
+                    <el-table-column prop="gender" label="性别" width="180">
+                    </el-table-column>
+                    <!-- </el-col> -->
+                    <!-- <el-col :span="5"> -->
+                    <el-table-column label="操作">
+                        <template slot-scope="scope">
+                            <el-button size="mini" type="primary" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                            <el-button size="mini" type="danger" @click="handleDel(scope.$index, scope.row)">删除</el-button>
+                        </template>
+                    </el-table-column>
+                    <!-- </el-col> -->
+                    <!-- </el-row> -->
+                </el-table>
+        
+            </div>    
+</body>
+<script>
+        var vm = new Vue({
+            el: '#app',
+            data: {
+              tableData:[{
+                    id: '1',
+                    name: '大板牙',
+                    age: '21',
+                    gender: '女'
+                }, {
+                    id: '2',
+                    name: '虎豹豹',
+                    age: '21',
+                    gender: '男'
+                }],
+                dialogFormVisible: false,
+                dialogFormType: '',
+                id: '',
+                name: '',
+                age: '',
+                gender: '',
+                formLabelWidth: '120px',
+                idArr: {},
+                list: [],
+                searchId:'',
+                danTeng:true,
+                index:'',
+                rowId:''
+
+            },
+            mounted () {
+                this.getAllId()
+            },
+            methods: {
+                // 错误消息提示框
+                error(msg) {
+                    this.$message({
+                        showClose: true,
+                        message: msg,
+                        type: 'error'
+                    });
+                },
+                success(msg) {
+                    this.$message({
+                        showClose: true,
+                        message: msg,
+                        type: 'success'
+                    })
+                },
+                //获得所有数据的id
+                getAllId() {
+                    this.tableData.forEach((item,i) => {
+                        this.idArr[item.id]=item.id
+                    })
+                },
+                // 点击添加显示弹框
+                isHidden(){
+                    this.danTeng=true
+                    this.dialogFormVisible=true
+                },
+                 //当弹框关闭后清空数据
+                 closeDialog() {
+                    this.id = this.gender =this.age=this.name= null
+                },
+                // 点击确定添加信息
+                getUserInfoItem(){
+                    // 正则复杂的判断搞不起 伤脑筋
+                    if(this.id.trim()== ''||this.name.trim()== ""||this.age.trim()== ""||this.gender.trim()== "") return this.error('输入内容不能为空')
+                    for(var key in this.idArr){
+                            if(this.id == this.idArr[key]){
+                                return  this.error('用户ID已存在182行') 
+                            }
+                        }
+                    if(this.danTeng){
+                        let o={}
+                        // 添加成功记得添加到数组ID中
+                        this.idArr[this.id]=this.id
+                        console.log(this.idArr)
+                        o.id = this.id;
+                        o.name = this.name;
+                        o.age = this.age;
+                        o.gender = this.gender;
+                        this.tableData.push(o)
+                        this.success('恭喜你，添加成功')
+                    }else {
+                        this.tableData.forEach((item,i) => {
+                            if(i==this.index){
+                                item.id = this.id
+                                item.name = this.name
+                                item.age = this.age
+                                item.gender = this.gender
+                            }
+                        })
+                        for(var key in this.idArr){
+                            if(this.rowId == key){
+                                console.log(key)
+                                this.idArr[key]=this.id 
+                            }
+                        }
+                        console.log(this.idArr)
+                        this.success('恭喜你，修改成功')
+                    }
+                    this.id = this.gender =this.age=this.name= null
+                    this.dialogFormVisible = false
+                },
+                //编辑
+                handleEdit(index, row){
+                    this.rowId = row.id
+                    this.danTeng=false
+                    this.index = index
+                    this.id = row.id
+                    this.name = row.name
+                    this.age = row.age
+                    this.gender = row.gender
+                    this.dialogFormVisible = true
+                },
+                handleDel(index, row) {
+                    // 删除id为2后再添加id是2的就会提示id已存在 原因是数组中的ID没删
+                    delete this.idArr[row.id]
+                    this.tableData.splice(index, 1)
+                    // console.log(this.tableData)
+                    console.log(this.idArr)
+                    this.success('恭喜你，删除成功')
+                },
+            },
+            computed: {
+                // 查询用户ID
+                newList() {
+                    // ES5方法 注意this指向
+                    // var that = this
+                    // function isContainStr (value) {
+                    // //   console.log(this);
+                    //   // !==-1就表示满足条件，能够找到该字符串
+                    //   return value.id.indexOf(that.searchVal) !== -1
+                    // }
+                    // var tempList = this.tableData.filter(isContainStr)
+                    // console.log(1)
+                    // return tempList
+
+
+                    // 查询的ID是否存在
+                    var flag = true
+                    if(this.searchId == ''){
+                        // console.log(1)
+                        flag = false;
+                    }
+                    for(var key in this.idArr){
+                        if(this.searchId == this.idArr[key]){
+                            flag = false;
+                        }
+                    }
+                    if(flag){
+                        return  this.error('查询的用户ID不存在') 
+                    }
+                    // es6箭头中的this是在哪儿定义就指向谁
+                    return this.tableData.filter(value => value.id.indexOf(this.searchId) !== -1)
+                }
+            }
+        })
+</script>
+</html>

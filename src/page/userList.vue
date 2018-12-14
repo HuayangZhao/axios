@@ -33,17 +33,16 @@
                 prop="mg_state"
                 label="状态">
             <template slot-scope="scope">
-                <el-button size="mini" :type="scope.row.mg_state ? 'success' : 'danger'" @click="handleEdit(scope.$index, scope.row)">{{ scope.row.mg_state ?"开放":"禁用"}}</el-button>
+                <el-button size="mini" :type="scope.row.mg_state ? 'success' : 'danger'">{{ scope.row.mg_state ?"开放":"禁用"}}</el-button>
             </template>
         </el-table-column>
     </el-table>
 </div>
 </template>
-
 <script>
     // 格式化时间
     import moment from 'moment'
-    import axios from 'axios'
+    import {getList} from '@/api/axios.js'
     export default {
         data() {
             return {
@@ -76,17 +75,8 @@
         },
         methods:{
             getUserList(){
-                let token = localStorage.getItem('itcast')
-                // 设置请求头信息 为了携带token ,Authorization名称是后台定义好的
-
                 // axios.get('http://127.0.0.1:8888/api/private/v1/users?pagenum=1&pagesize=10')
-                axios.get('http://127.0.0.1:8888/api/private/v1/users',{
-                    headers: { "Authorization":token },
-                    params:{
-                        pagenum:this.pagenum,
-                        pagesize:this.pagesize
-                    }
-                }).then(res=>{
+                getList(this.pagenum,this.pagesize).then(res=>{
                     // console.log(res);
                     if(res.data.meta.status == 200){
                         this.users = res.data.data.users
@@ -110,9 +100,5 @@
         }
     }
 </script>
-
-<style scoped>
-    .has-gutter{
-    text-align: center;
-}
+<style lang="less">
 </style>

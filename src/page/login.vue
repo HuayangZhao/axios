@@ -8,7 +8,7 @@
                 <el-input v-model="username"></el-input>
             </el-form-item>
             <el-form-item label="密码">
-                <el-input v-model="password" type="password" @keyup.enter="clickLogin"></el-input>
+                <el-input v-model="password" type="password" @keyup.enter.native="clickLogin"></el-input>
             </el-form-item>
             <el-form-item >
                  <el-button type="primary"  class="loginButton" @click="clickLogin">登&nbsp;&nbsp;&nbsp;&nbsp;录</el-button>
@@ -18,7 +18,7 @@
 </template>
 <script>
 // 导入axios
-import axios from "axios"
+import {login} from "@/api/axios.js"
 export default {
     data(){
         return{
@@ -28,11 +28,7 @@ export default {
     },
     methods:{
        clickLogin(){
-           axios.post('http://127.0.0.1:8888/api/private/v1/login',{
-               username:this.username,
-               password:this.password
-           })
-           .then(res=>{
+           login(this.username,this.password).then(res=>{
                console.log(res)
                if(res.data.meta.status==200){
                    localStorage.setItem('itcast',res.data.data.token)
