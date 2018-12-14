@@ -1,6 +1,6 @@
 <template>
     <div class="indexContainer"> 
-     <el-col :span="4">
+     <el-col :span="4" class="classify">
         <el-menu :default-active="activeName" @select="handleSelect" class="el-menu-vertical-demo">
             <el-submenu index="1">
                 <template slot="title">
@@ -42,7 +42,6 @@
     <el-col :span="20" class="users">
         <router-view></router-view>
     </el-col>
-
     </div>
 </template>
 <script>
@@ -55,7 +54,7 @@
     methods: {
         // 设置选中菜单时调用函数
         handleSelect(key,index){
-            console.log(key, index);
+            // console.log(key, index);
             switch (index) {
                 case '1-1':
                     // 跳转到用户列表
@@ -68,13 +67,19 @@
   }
 </script>
 <style lang="less">
+.indexContainer {
+    display: flex;
+}
+    .classify{
+        min-width: 160px;
+    }
 .el-menu-vertical-demo{
-    min-width: 160px;
     .el-submenu .el-menu-item {
         min-width: 10px;
     }
 }
     .users{
         padding: 50px;
+        min-width: 300px;
     }
 </style>
